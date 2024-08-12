@@ -1,6 +1,6 @@
 import { ComponentInternals, Container, ContainerProperties, DefaultProperties } from '@react-three/uikit'
 import React, { ReactNode, RefAttributes, forwardRef } from 'react'
-import { GlassMaterial, colors } from './theme.js'
+import { GlassMaterial, colors } from './theme.tsx'
 
 export type CardProperties = ContainerProperties
 

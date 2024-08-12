@@ -1,50 +1,31 @@
 import { useSpring, a } from "@react-spring/three";
-import { Edges, Outlines, Select, useGLTF } from "@react-three/drei"
+import { Edges, Outlines, PresentationControls, Select, useGLTF } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
-import Ui from "./Ui";
+import Ui from "./ui/Ui";
+import { useAtomValue, useSetAtom } from "jotai";
+import { nodeDetailsAtom, presentationAtom, rotateAtom, scalingAtom, selectedNodeAtom, selectedNodeRefAtom } from "./jotai/atoms";
+import columnData from "./data";
 
 const columns = 1;
 const parts = 5;
-
-const columnData = {
-	"column_1_part_1": {
-		title: "column_1_part_1",
-		description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-	},
-	"column_1_part_2": {
-		title: "column_1_part_2",
-		description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-	},
-	"column_1_part_3": {
-		title: "column_1_part_3",
-		description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-	},
-	"column_1_part_4": {
-		title: "column_1_part_4",
-		description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-	},
-	"column_1_part_5": {
-		title: "column_1_part_5",
-		description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-	}
-};
-
 
 export function Model1() {
 
 	const { nodes, materials } = useGLTF("/greek_column_1.glb");
 
-	const [hover, setHover] = useState("");
-	const [click, setClick] = useState("");
-	
-	const handleClick = (nodeName) => {
-		setClick(prev => prev == nodeName ? "" : nodeName);
-	}
+    const selectedNode = useAtomValue(selectedNodeAtom);
+
+	const scaling = useAtomValue(scalingAtom)
+
+	const { scale } = useSpring({
+		scale: scaling,
+		config: { duration: 200 },
+	});
 
 	return (
 		<>
-			<group scale={1}>
+			<a.mesh scale={scale}>
 				{Array.from({ length: columns }, (_, colIndex) =>
 					Array.from({ length: parts }, (_, partIndex) => {
 					const nodeName = `column_${colIndex + 1}_part_${partIndex + 1}`;
@@ -53,36 +34,25 @@ export function Model1() {
 						node && node.type === 'Mesh' && (
 							<Singular
 								key={nodeName}
-								hover={hover}
-								click={click}
+								selectedNode={selectedNode}
 								nodeName={nodeName}
 								material={materials.textureMap}
-								setHover={setHover}
-								setClick={setClick}
 								node={node}
-								handleClick={handleClick}
 							/>
 						)
 					);
 					})
 				)}
-			</group>
-			{
-//				click !== "" &&
-				<Ui
-					//title={columnData[click].title}
-					//description={columnData[click].description}
-				/>
-			}
+			</a.mesh>
 		</>
 	)
 }
 
-const Singular = ({ node, nodeName, material, hover ,setHover, click, setClick, handleClick }) => {
+const Singular = ({ node, nodeName, material, selectedNode }) => {
 
 	const { position } = useSpring({
 		position:
-			click == nodeName
+			selectedNode == nodeName
 				? [0, 1, 0]
 				//: [node.position.x - 2, 3, 1],
 				: [node.position.x, node.position.y, node.position.z - 1],
@@ -91,13 +61,25 @@ const Singular = ({ node, nodeName, material, hover ,setHover, click, setClick, 
 
 	const [rotateY, setRotateY] = useState(node.rotation.y)
 
+	const rotate = useAtomValue(rotateAtom);
+	const setSelectedNodeRef = useSetAtom(selectedNodeRefAtom);
+
 	useFrame(({ clock }) => {
 		const a = clock.getElapsedTime();
-		if(hover == nodeName && click == nodeName)
+		if(rotate && selectedNode == nodeName)
 			setRotateY(a)
 	});
 
 	const ref =	useRef();
+
+	useEffect(() => {
+		if(selectedNode === nodeName)
+			setSelectedNodeRef(ref.current)
+
+		if(selectedNode !== nodeName)
+			setRotateY(node.rotation.y);
+	}, [selectedNode])
+
 	return(
 		<a.mesh
 			castShadow
@@ -107,14 +89,8 @@ const Singular = ({ node, nodeName, material, hover ,setHover, click, setClick, 
 			position={position}
 			rotation={[node.rotation.x, rotateY, node.rotation.z]}
 			scale={node.scale}
-			onClick={() => handleClick(nodeName)}
-			onPointerOver={() => setHover(nodeName)}
-			onPointerOut={() => {
-				setHover("")
-				setRotateY(node.rotation.y)
-			}}
+			onClick={() => console.log()}
 			ref={ref}
-		>
-		</a.mesh>
+		/>
 	)
 }

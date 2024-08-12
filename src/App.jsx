@@ -4,7 +4,10 @@ import { SoftShadows, Float, CameraControls, Sky, PerformanceMonitor } from '@re
 import { easing } from 'maath'
 import { Model1 } from './Model.jsx'
 import { XR, XROrigin, createXRStore } from '@react-three/xr'
-import Ui from './Ui.jsx'
+import Ui from './ui/Ui.jsx'
+import { useAtomValue } from 'jotai'
+import { presentationAtom } from './jotai/atoms.js'
+import Controls from './controls.jsx'
 
 function Light() {
 	const ref = useRef()
@@ -28,6 +31,9 @@ function Light() {
 const store = createXRStore()
 
 export default function App() {
+
+	const presentation = useAtomValue(presentationAtom);
+
 	return (
 		<>
 			<div
@@ -79,10 +85,11 @@ export default function App() {
 				<XR store={store}>
 					<axesHelper />
 					<SoftShadows />
-					<CameraControls makeDefault />
+					<Controls />
 					<color attach="background" args={['#d0d0d0']} />
 					<ambientLight intensity={0.5} />
 					<Model1/>
+					<Ui />
 					<XROrigin position={[0, 0, 2]} />
 				</XR>
 			</Canvas>
