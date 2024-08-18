@@ -4,6 +4,7 @@ import { Button } from "../components/apfel/button"
 import { RotateCcw, Scaling, Torus } from "@react-three/uikit-lucide"
 import { useAtom } from "jotai"
 import { rotateAtom, presentationAtom, scalingAtom } from "../jotai/atoms"
+import { useEffect } from "react"
 
 const RightBar = () => {
 
@@ -63,10 +64,10 @@ const RightBar = () => {
             <Card
                 width="100%"
                 height="33%"
-                backgroundOpacity={scaling < 1 ? 0.3 : 0.7}
+                backgroundOpacity={scaling ? 0.3 : 0.7}
             >
                 <Button
-                    onClick={() => setScaling(prev => prev === 1 ? 0.5 : 1)}
+                    onClick={() => setScaling(!scaling)}
                     width="100%"
                     height="100%"
                     backgroundColor="#000"

@@ -19,7 +19,7 @@ export function Model1() {
 	const scaling = useAtomValue(scalingAtom)
 
 	const { scale } = useSpring({
-		scale: scaling,
+		scale: scaling ? 0.5 : 1,
 		config: { duration: 200 },
 	});
 
@@ -55,7 +55,7 @@ const Singular = ({ node, nodeName, material, selectedNode }) => {
 			selectedNode == nodeName
 				? [0, 1, 0]
 				//: [node.position.x - 2, 3, 1],
-				: [node.position.x, node.position.y, node.position.z - 1],
+				: [node.position.x, node.position.y, node.position.z - 2],
 		config: { duration: 500 },
 	});
 
@@ -65,7 +65,7 @@ const Singular = ({ node, nodeName, material, selectedNode }) => {
 	const setSelectedNodeRef = useSetAtom(selectedNodeRefAtom);
 
 	useFrame(({ clock }) => {
-		const a = clock.getElapsedTime();
+		const a = clock.getElapsedTime() % (2 * Math.PI);
 		if(rotate && selectedNode == nodeName)
 			setRotateY(a)
 	});

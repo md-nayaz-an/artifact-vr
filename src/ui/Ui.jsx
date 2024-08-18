@@ -17,6 +17,7 @@ const Ui = () => {
     return (
 		<group
 			position={[1, 1, 0]}
+			rotation={[0, - Math.PI / 4, 0]}
 			scale={Math.min(1, aspectRatio * 0.7) / 1200}
 		>
 			<Root

@@ -7,7 +7,8 @@ import { XR, XROrigin, createXRStore } from '@react-three/xr'
 import Ui from './ui/Ui.jsx'
 import { useAtomValue } from 'jotai'
 import { presentationAtom } from './jotai/atoms.js'
-import Controls from './controls.jsx'
+import Controls from './joyStick.jsx'
+import JoyStick from './joyStick.jsx'
 
 function Light() {
 	const ref = useRef()
@@ -85,12 +86,12 @@ export default function App() {
 				<XR store={store}>
 					<axesHelper />
 					<SoftShadows />
-					<Controls />
+					<CameraControls makeDefault minPolarAngle={0} maxPolarAngle={Math.PI / 1.75} />
+					<JoyStick />
 					<color attach="background" args={['#d0d0d0']} />
 					<ambientLight intensity={0.5} />
 					<Model1/>
 					<Ui />
-					<XROrigin position={[0, 0, 2]} />
 				</XR>
 			</Canvas>
 		</>
